@@ -1,0 +1,95 @@
+# Compiled
+*.elc
+
+# Packaging
+.cask
+
+# Backup files
+*~
+\#*\#
+auto-save-list
+.saves*
+
+# Undo-tree save-files
+*.~undo-tree
+
+# Emacs server files
+server/
+
+straight
+snippets
+transient
+# Elpa/Melpa/Package.el
+/elpa/
+/.last-package-update-day
+/.cask/
+
+# Flycheck
+flycheck_*.el
+
+# Eshell files
+/eshell/history
+/eshell/lastdir
+
+# Projectile
+projectile-bookmarks.eld
+projectile.cache
+
+tutorial
+elpa
+eln-cache
+auto-save-list
+projectile-bookmarks.eld
+places
+
+# Directory configuration
+.dir-locals.el
+
+# Network Security Manager
+/network-security.data
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# Semanticdb
+/semanticdb/
+
+# Recentf
+recentf
+
+# Tramp
+tramp
+
+# URL cache
+url/cache/
+
+# Custom files
+custom.el
+
+# Packages
+/.cask/
+/dist/
+
+# Transient
+/transient/
+
+# Games
+/games/
+
+# Caches
+.cache/
+/eln-cache/
+company-statistics-cache.el
+/var/
+
+# Anaconda mode
+/anaconda-mode/
+
+# Straight package manager
+/straight/build/
+/straight/repos/
+/straight/modified/
+
+# lsp-mode
+.lsp-session-*

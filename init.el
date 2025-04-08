@@ -166,41 +166,37 @@
     :prefix "SPC"
     :global-prefix "C-SPC")
 
-  (leader-keys
-    "x" '(execute-extended-command :which-key "execute command")
-    "r" '(restart-emacs :which-key "restart emacs")
-    "i" '((lambda () (interactive) (find-file user-init-file)) :which-key "open init file")
-
-    ;; File operations - similar to Doom's SPC f bindings
-    "f" '(:ignore t :which-key "find/file")
-    "f <escape>" '(keyboard-escape-quit :which-key t)
-    "f f" '(counsel-find-file :which-key "find file")
-    "f r" '(counsel-recentf :which-key "recent files")
-    "f z" '(counsel-fzf :which-key "fzf")
-    "f g" '(counsel-git :which-key "find git file")
-    
-    ;; Search operations - similar to Doom's SPC s bindings
-    "s" '(:ignore t :which-key "search")
-    "s <escape>" '(keyboard-escape-quit :which-key t)
-    "s s" '(swiper :which-key "search buffer")
-    "s p" '(counsel-rg :which-key "search project")
-    "s d" '(counsel-rg :which-key "search directory")
-    "s i" '(counsel-imenu :which-key "search imenu")
-    "s b" '(counsel-switch-buffer :which-key "search buffers")
-    
-    ;; Project operations - additional useful bindings
-    "p f" '(counsel-projectile-find-file :which-key "find file in project")
-    "p s" '(counsel-projectile-rg :which-key "search in project")
-    
-    ;; Buffer operations - additional buffer commands
-    "b i" '(ibuffer :which-key "ibuffer")
-    "b k" '(kill-current-buffer :which-key "kill buffer")
-    "b n" '(next-buffer :which-key "next buffer")
-    "b p" '(previous-buffer :which-key "previous buffer")
-    
-    ;; Direct access to rg (ripgrep)
-    "/" '(counsel-rg :which-key "search project")  )
-)
+(leader-keys
+  "x" '(execute-extended-command :which-key "execute command")
+  "r" '(restart-emacs :which-key "restart emacs")
+  "i" '((lambda () (interactive) (find-file user-init-file)) :which-key "open init file")
+  ;; File operations - similar to Doom's SPC f bindings
+  "f" '(:ignore t :which-key "find/file")
+  "f f" '(counsel-find-file :which-key "find file")
+  "f r" '(counsel-recentf :which-key "recent files")
+  "f z" '(counsel-fzf :which-key "fzf")
+  "f g" '(counsel-git :which-key "find git file")
+  
+  ;; Search operations - similar to Doom's SPC s bindings
+  "s" '(:ignore t :which-key "search")
+  "s s" '(swiper :which-key "search buffer")
+  "s p" '(counsel-rg :which-key "search project")
+  "s d" '(counsel-rg :which-key "search directory")
+  "s i" '(counsel-imenu :which-key "search imenu")
+  "s b" '(counsel-switch-buffer :which-key "search buffers")
+  
+  ;; Project operations - additional useful bindings
+  "p f" '(counsel-projectile-find-file :which-key "find file in project")
+  "p s" '(counsel-projectile-rg :which-key "search in project")
+  
+  ;; Buffer operations - additional buffer commands
+  "b i" '(ibuffer :which-key "ibuffer")
+  "b k" '(kill-current-buffer :which-key "kill buffer")
+  "b n" '(next-buffer :which-key "next buffer")
+  "b p" '(previous-buffer :which-key "previous buffer")
+  
+  ;; Direct access to rg (ripgrep)
+  "/" '(counsel-rg :which-key "search project")  ))
 
 ;; ;; I have no clue what this is?
 ;; ;; Better completion framework
@@ -430,6 +426,8 @@
   (leader-keys
     "f" '(rg-menu :which-key "find")))
 
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
 
 ;; Reset GC threshold after startup
 (add-hook 'emacs-startup-hook

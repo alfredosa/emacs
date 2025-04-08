@@ -260,6 +260,7 @@
 ;; ;; Git integration
 ;; (use-package magit
 (use-package magit
+  :demand
   :general
   (leader-keys
     "g" '(:ignore t :which-key "git")
@@ -331,6 +332,10 @@
 
 (use-package yasnippet-snippets)
 
+(use-package format-all
+  :demand
+  :ensure t
+  :hook (prog-mode . format-all-mode))
 
 ;; Org mode enhancements
 ;; hook seems to be the equivalent of on-attach buffer from Vim;
@@ -398,6 +403,7 @@
 (use-package typescript-mode)
 
 (use-package rg
+  :demand
   :general
   (leader-keys
     "f" '(rg-menu :which-key "find")))

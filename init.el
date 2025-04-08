@@ -119,7 +119,7 @@
 ;; -------- END EMACS Specific niceties ---------
 ;; TODO: I think maybe this might be the perfect setup.
 
-;;
+;; QUESTION: Does this actually execute???
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
@@ -205,11 +205,13 @@
 ;; ;; I have no clue what this is?
 ;; ;; Better completion framework
 (use-package ivy
+  :demand
   :config
   (ivy-mode))
 
 ;; Optional: Fuzzy matching for Ivy
 (use-package flx  ; provides fuzzy matching for ivy
+  :demand
   :config
   (setq ivy-re-builders-alist
         '((t . ivy--regex-fuzzy))))
@@ -217,6 +219,7 @@
 ;; Optional: Better sorting for ivy results
 (use-package ivy-prescient
   :after ivy
+  :demand
   :config
   (ivy-prescient-mode 1)
   (prescient-persist-mode 1))
@@ -352,17 +355,32 @@
 ;;   (load custom-file))
 
 ;; @@@@@@@@@@@@@@ LSP @@@@@@@@@@
-(use-package emacs
-  :hook (zig-mode . eglot-ensure)
-  :hook (rust-mode . eglot-ensure)
-  :hook (go-mode . eglot-ensure)
-  :hook (typescript-mode . eglot-ensure)
-  :general
-  (leader-keys
-    "l" '(:ignore t :which-key "lsp")
-    "l <escape>" '(keyboard-escape-quit :which-key t)
-    "l r" '(eglot-rename :which-key "rename")
-    "l a" '(eglot-code-actions :which-key "code actions")))
+(use-package lsp-mode
+  :demand
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (rust-mode . lsp)
+         (go-mode . lsp)
+         (python-mode . lsp)
+         (yaml-ts-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optional
+(use-package lsp-ui :commands lsp-ui-mode)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; optionally if you want to use debugger
+(use-package dap-mode)
+;; TODO: add dap language.
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+;; @@@@@@@@@@@@@@ LSP @@@@@@@@@@
+
 
 (use-package treesit-auto
   :custom
@@ -381,7 +399,8 @@
     "m <escape>" '(keyboard-escape-quit :which-key t)
     "m b" '(zig-compile :which-key "build")
     "m r" '(zig-run :which-key "run")
-    "m t" '(zig-test :which-key "test")))
+    "m t" '(zig-test :which-key "test")
+    ))
 (use-package rust-mode
   :general
   (leader-keys
@@ -391,7 +410,10 @@
     "m r" '(rust-run :which-key "run")
     "m t" '(rust-test :which-key "test")
     "m k" '(rust-check :which-key "check")
-    "m c" '(rust-run-clippy :which-key "clippy")))
+    "m c" '(rust-run-clippy :which-key "clippy")
+    "m f" '(rust-format-buffer :which-key "format")
+    ))
+
 (use-package go-mode)
 (use-package gotest
   :general

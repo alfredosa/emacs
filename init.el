@@ -7,7 +7,6 @@
 (setq inhibit-splash-screen t) ; Remove the "Welcome to GNU Emacs" splash screen
 (setq use-file-dialog nil) (global-display-line-numbers-mode t)
 
-
 (defvar bootstrap-version)
 (let ((bootstrap-file
     (expand-file-name
@@ -86,7 +85,7 @@
   (setq-default fill-column 88)
   (set-face-attribute 'fill-column-indicator nil
                       :foreground "#717C7C" ; katana-gray
-                      :background "transparent")
+                      :background nil)
   (global-display-fill-column-indicator-mode 1))
 
 (use-package emacs
@@ -116,7 +115,30 @@
                       :weight 'normal
                       :width 'normal))
 
+;; fix for the dumb mac compilation 
+;; (when (fboundp 'native-comp-available-p)
+;;   (setq native-comp-deferred-compilation t)
+;;   (add-to-list 'native-comp-deferred-compilation-deny-list "\\(^/.*exec-path-from-shell\\.el$\\)"))
+;;
+
+;; FIND ALL BINARY PATHS AND LOAD THEM FROM SHELL
+
+(use-package exec-path-from-shell
+  :demand  ;; Load immediately, not lazily
+  :config
+  (when (or (memq window-system '(mac ns x))
+            (daemonp))
+    ;; Initialize from the shell's full environment
+    (exec-path-from-shell-initialize)
+    
+    ;; Explicitly ensure go-related paths are included
+    (exec-path-from-shell-copy-envs '("PATH" "GOPATH" "GOROOT"))
+    
+    ;; Add Homebrew bin directory to exec-path
+    (add-to-list 'exec-path "/opt/homebrew/bin")))
+
 ;; -------- END EMACS Specific niceties ---------
+
 ;; TODO: I think maybe this might be the perfect setup.
 
 ;; QUESTION: Does this actually execute???
@@ -125,8 +147,6 @@
                 shell-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-
 
 ;; ############ UI Beautify ##############
 
@@ -151,7 +171,7 @@
   :init (which-key-mode)
   :diminish which-key-mode
   :config
-  (setq which-key-idle-delay 0.3)) ;; I like the 0.3 :D 
+  (setq which-key-idle-delay 0.2)) ;; I like the 0.3 :D 
 ;;
 
 
@@ -170,6 +190,7 @@
   "x" '(execute-extended-command :which-key "execute command")
   "r" '(restart-emacs :which-key "restart emacs")
   "i" '((lambda () (interactive) (find-file user-init-file)) :which-key "open init file")
+
   ;; File operations - similar to Doom's SPC f bindings
   "f" '(:ignore t :which-key "find/file")
   "f f" '(counsel-find-file :which-key "find file")
@@ -180,7 +201,7 @@
   ;; Search operations - similar to Doom's SPC s bindings
   "s" '(:ignore t :which-key "search")
   "s s" '(swiper :which-key "search buffer")
-  "s p" '(counsel-rg :which-key "search project")
+  "s g" '(counsel-rg :which-key "search project")
   "s d" '(counsel-rg :which-key "search directory")
   "s i" '(counsel-imenu :which-key "search imenu")
   "s b" '(counsel-switch-buffer :which-key "search buffers")
@@ -237,10 +258,10 @@
   :general
   (leader-keys
     :states 'normal
-    "SPC" '(projectile-find-file :which-key "find file")
+    "s f" '(projectile-find-file :which-key "find file")
 
     ;; Buffers
-    "b b" '(projectile-switch-to-buffer :which-key "switch buffer")
+    "SPC" '(projectile-switch-to-buffer :which-key "switch buffer")
 
     ;; Projects
     "p" '(:ignore t :which-key "projects")
@@ -249,11 +270,15 @@
     "p a" '(projectile-add-known-project :which-key "add project")
     "p r" '(projectile-remove-known-project :which-key "remove project"))
   :init
-  (setq projectile-project-search-path '("~/codehub/"))
+  (setq projectile-project-search-path '("~/codehub/" "~/Org" "~/.config/"))
   (setq projectile-switch-project-action #'projectile-dired)
-  (projectile-mode +1))
+  ;; Force the use of ripgrep for everything
+
+  (projectile-mode +1)
+  (projectile-discover-projects-in-search-path))
 ;;
 (use-package counsel-projectile
+  :demand
   :config (counsel-projectile-mode))
 ;;
 ;; ;; Git integration
@@ -424,7 +449,7 @@
   :demand
   :general
   (leader-keys
-    "f" '(rg-menu :which-key "find")))
+    "s g" '(rg-menu :which-key "find")))
 
 (use-package emojify
   :hook (after-init . global-emojify-mode))
@@ -439,3 +464,4 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
+;;;init.el ends here.

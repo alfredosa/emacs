@@ -34,6 +34,10 @@
 (setq straight-check-for-modifications '(check-on-save find-when-checking))
 (setq straight-vc-git-default-clone-depth 1)
 
+(when (eq system-type 'darwin)
+  (setq mac-command-modifier 'meta
+        mac-option-modifier nil))
+
 ;;;----------------------------------------------------------------------------
 ;;; Core Emacs Behavior
 ;;;----------------------------------------------------------------------------
@@ -110,12 +114,17 @@
 
 ;; Bind custom function
 (global-set-key (kbd "C-c C-r") 'reload-init-file)
+(global-set-key (kbd "C-c k") 'lsp-describe-thing-at-point)
+
 (global-set-key (kbd "C-x p p") 'projectile-switch-project)
 (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+(global-set-key (kbd "C-x p f") 'projectile-find-file)
+
 (global-set-key (kbd "C-x g m") 'magit)
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
 
-; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+
+					; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 
 ;; We will define more keybindings below as we configure packages
 
@@ -184,8 +193,10 @@
   :init
   (setq projectile-project-search-path '("~/codehub/" "~/Org" "~/.config/"))
   (setq projectile-completion-system 'ivy) ; Make projectile use Ivy
+  (setq projectile-enable-caching t)
   :config
-  (projectile-mode +1))
+  (projectile-mode +1)
+  (projectile-cleanup-known-projects))
 
 (use-package counsel-projectile
   :after projectile
@@ -304,7 +315,7 @@
 (use-package typescript-mode)
 
 
-;; This is just so fucking cool. 
+;; This is just so fucking cool.
 (use-package tab-bar
   :ensure nil ; It's built-in, no need to download
   :config
@@ -355,3 +366,18 @@
                      gcs-done)))
 
 ;;; init.el ends here.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("56044c5a9cc45b6ec45c0eb28df100d3f0a576f18eef33ff8ff5d32bac2d9700"
+     "599f72b66933ea8ba6fce3ae9e5e0b4e00311c2cbf01a6f46ac789227803dd96"
+     default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

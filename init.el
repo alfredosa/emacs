@@ -8,6 +8,9 @@
 (setq use-file-dialog nil)
 (global-display-line-numbers-mode t)
 
+(setq backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups"))))
+
 ;;;----------------------------------------------------------------------------
 ;;; Package Management (straight.el)
 ;;;----------------------------------------------------------------------------
@@ -124,7 +127,7 @@
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
 
 
-					; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+                                        ; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 
 ;; We will define more keybindings below as we configure packages
 

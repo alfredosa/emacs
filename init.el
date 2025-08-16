@@ -117,7 +117,6 @@
 
 ;; Bind custom function
 (global-set-key (kbd "C-c C-r") 'reload-init-file)
-(global-set-key (kbd "C-c k") 'lsp-describe-thing-at-point)
 
 (global-set-key (kbd "C-x p p") 'projectile-switch-project)
 (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
@@ -125,7 +124,7 @@
 
 (global-set-key (kbd "C-x g m") 'magit)
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
-
+(global-set-key (kbd "C-x C-/") 'comment-line)
 
                                         ; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 
@@ -147,11 +146,10 @@
 (use-package doom-themes
   :demand
   :config
-  (load-theme 'doom-gruvbox t))
+  (load-theme 'doom-pine t))
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+(use-package mood-line
+  :init (mood-line-mode))
 
 (use-package nerd-icons)
 
@@ -287,7 +285,16 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
-(use-package lsp-ui :commands lsp-ui-mode)
+
+;; Make lsp ui great again :) 
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-show-with-cursor t)
+  (global-set-key (kbd "C-c k") 'lsp-ui-doc-glance)
+  (setq lsp-ui-doc-delay 0.5)
+  (setq lsp-ui-doc-position 'at-point))
+
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 (use-package dap-mode) ;; Debugger support
@@ -368,7 +375,6 @@
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
-;;; init.el ends here.
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -384,3 +390,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(setq alfies-preferred-font "Firacode Nerd Font")
+
+(if (find-font (font-spec :name alfies-preferred-font))
+    (progn
+      (set-face-attribute 'default nil :font alfies-preferred-font :height 160)
+      (message "Successfully set font to %s." alfies-preferred-font))
+  (message "WARNING: Font '%s' is not installed." alfies-preferred-font))
+
+;; init.el ends here

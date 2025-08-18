@@ -6,10 +6,12 @@
 (scroll-bar-mode -1)            ;; Hide the always-visible scrollbar
 (setq inhibit-splash-screen t)   ;; Remove the "Welcome to GNU Emacs" splash screen
 (setq use-file-dialog nil)
-(global-display-line-numbers-mode t)
 
 (setq backup-directory-alist
       `(("." . ,(concat user-emacs-directory "backups"))))
+(setq auto-save-file-name-transforms
+      `((".*" ,(concat user-emacs-directory "auto-saves/") t)))
+(setq create-lockfiles nil)
 
 ;;;----------------------------------------------------------------------------
 ;;; Package Management (straight.el)
@@ -82,18 +84,10 @@
     (setq display-line-numbers t))
   (add-hook 'prog-mode-hook #'ab/enable-line-numbers)
 
-  ;; Disable line numbers in modes where they are not useful
-  (dolist (mode '(org-mode-hook
-                  term-mode-hook
-                  shell-mode-hook
-                  eshell-mode-hook
-                  magit-status-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
   ;; Show a fill column indicator
   (set-face-attribute 'fill-column-indicator nil
                       :foreground "#717C7C" ; katana-gray
-                      :background nil)
+                      :background 'unspecified)
   (global-display-fill-column-indicator-mode 1))
 
 ;;;----------------------------------------------------------------------------
@@ -115,6 +109,7 @@
   (save-buffer)
   (kill-buffer))
 
+;; TODO: Move
 ;; Bind custom function
 (global-set-key (kbd "C-c C-r") 'reload-init-file)
 
@@ -126,7 +121,18 @@
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
 (global-set-key (kbd "C-x C-/") 'comment-line)
 
-                                        ; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+;; NOTE: This is a prexix :)
+(defvar my-find-map (make-sparse-keymap)
+  "My custom keymap for various find commands.")
+
+
+(define-key my-find-map (kbd "r") 'counsel-rg)
+(define-key my-find-map (kbd "f") 'projectile-find-file)
+(define-key my-find-map (kbd "b") 'counsel-ibuffer)
+
+(global-set-key (kbd "C-c f") (cons "Find" my-find-map))
+
+                                        ;; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 
 ;; We will define more keybindings below as we configure packages
 
@@ -163,14 +169,14 @@
 ;; Ivy/Counsel/Swiper completion framework
 (use-package ivy
   :demand
-  :config
+  :init
   (ivy-mode 1)
+  :config
   ;; Make ivy use fuzzy matching
   (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
 
 (use-package counsel
   :after ivy
-  :demand
   :bind (("M-x" . counsel-M-x)
          ("C-x b" . counsel-ibuffer)
          ("C-x C-f" . counsel-find-file)
@@ -183,30 +189,27 @@
 
 (use-package ivy-prescient
   :after ivy
-  :demand
   :config
   (ivy-prescient-mode 1)
   (prescient-persist-mode 1))
 
-;; Project management
 (use-package projectile
-  :demand
   :init
   (setq projectile-project-search-path '("~/codehub/" "~/Org" "~/.config/"))
-  (setq projectile-completion-system 'ivy) ; Make projectile use Ivy
+  (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
   :config
+  ;; Enable the global mode after projectile is loaded
   (projectile-mode +1)
-  (projectile-cleanup-known-projects))
+  ;; This is the key: explicitly discover all projects on startup
+  (projectile-discover-projects-in-search-path))
 
 (use-package counsel-projectile
   :after projectile
-  :demand
   :config (counsel-projectile-mode))
 
 ;; Git integration
 (use-package magit
-  :demand
   ;; Bind magit-status to C-c g
   :bind (("C-c g" . magit-status)))
 
@@ -228,7 +231,6 @@
 
 ;; Search project with Ripgrep (rg)
 (use-package rg
-  :demand
   ;; Bind rg-menu to C-c s (s for search)
   :bind (("C-c s" . rg-menu)))
 
@@ -249,7 +251,6 @@
 
 ;; Auto-completion
 (use-package company
-  :demand
   :hook (prog-mode . global-company-mode)
   :config
   (setq company-idle-delay 0.1)
@@ -257,12 +258,10 @@
 
 ;; Syntax checking
 (use-package flycheck
-  :demand
   :init (global-flycheck-mode))
 
 ;; Snippets
 (use-package yasnippet
-  :demand
   :config
   (yas-global-mode 1))
 
@@ -270,12 +269,10 @@
 
 ;; Auto-formatter
 (use-package format-all
-  :demand
   :hook (prog-mode . format-all-mode))
 
 ;; LSP (Language Server Protocol)
 (use-package lsp-mode
-  :demand
   :init
   (setq lsp-keymap-prefix "C-c l") ;; lsp commands will be under C-c l
   :hook ((rust-mode . lsp)
@@ -286,13 +283,12 @@
   :commands lsp)
 
 
-;; Make lsp ui great again :) 
+;; Make lsp ui great again :)
 (use-package lsp-ui
   :commands lsp-ui-mode
   :config
-  (setq lsp-ui-doc-show-with-cursor t)
   (global-set-key (kbd "C-c k") 'lsp-ui-doc-glance)
-  (setq lsp-ui-doc-delay 0.5)
+  (setq lsp-ui-doc-delay 0.1)
   (setq lsp-ui-doc-position 'at-point))
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
@@ -324,56 +320,9 @@
 (use-package gotest)
 (use-package typescript-mode)
 
-
-;; This is just so fucking cool.
-(use-package tab-bar
-  :ensure nil ; It's built-in, no need to download
-  :config
-  ;; Enable the tab-bar globally
-  (tab-bar-mode 1)
-
-  ;; When switching projects, create a new tab for it
-  (setq projectile-switch-project-action #'projectile-dired-in-new-tab)
-
-  ;; Customize the look a bit (optional)
-  (setq tab-bar-show 1 ; Show text labels
-        tab-bar-close-button-show nil ; Hide the 'x' button
-        tab-bar-new-button-show nil   ; Hide the '+' button
-        tab-bar-separator nil)        ; Remove separators for a cleaner look
-
-  ;; --- Keybindings for fast switching ---
-  ;; Bind M-1, M-2, ... M-9 to switch to the corresponding tab
-  (dotimes (i 9)
-    (global-set-key (kbd (format "M-%d" (1+ i)))
-                    `(lambda ()
-                       (interactive)
-                       (tab-bar-select-tab ,(1+ i)))))
-  ;; Bind M-0 to select the 10th tab (optional)
-  (global-set-key (kbd "M-0")
-                  '(lambda ()
-                     (interactive)
-                     (tab-bar-select-tab 10))))
-
-;; Helper function for projectile to open dired in a new tab
-(defun projectile-dired-in-new-tab (project)
-  "Switch to PROJECT and show its root in Dired, creating a new tab if needed."
-  (interactive (list (projectile-project-root)))
-  (let ((projectile-switch-project-action 'projectile-dired))
-    (persp-projectile-find-project-and-switch project t)))
-
 ;;;----------------------------------------------------------------------------
 ;;; Finalization
 ;;;----------------------------------------------------------------------------
-
-;; Set GC threshold higher after startup to reduce stuttering
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 16 1024 1024)) ;; 16mb
-            (message "Emacs loaded in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -390,6 +339,18 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(use-package hl-todo
+  ;; Enable hl-todo automatically in programming modes
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  ;; You can customize the words and their corresponding colors (faces)
+  (setq hl-todo-keyword-faces
+        '(("TODO"  . "#FFD700") ; A bright yellow
+          ("FIXME" . "#FF4500") ; An orangey red
+          ("HACK"  . "#FF69B4") ; Hot pink
+          ("NOTE"  . "#1E90FF") ; A nice blue
+          ("REVIEW". "#9932CC"))))
 
 (setq alfies-preferred-font "Firacode Nerd Font")
 

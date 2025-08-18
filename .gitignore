@@ -94,3 +94,7 @@ company-statistics-cache.el
 # lsp-mode
 .lsp-session-*
 emojis
+straight/
+auto-saves-files/
+auto-saves/
+projects/

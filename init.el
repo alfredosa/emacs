@@ -1,4 +1,5 @@
 ;;; init.el --- main config file
+;;; Commentary
 
 ;;; Code: UI Improvements
 (menu-bar-mode -1)              ;; Disable the menu bar
@@ -40,8 +41,7 @@
 (setq straight-vc-git-default-clone-depth 1)
 
 (when (eq system-type 'darwin)
-  (setq mac-command-modifier 'meta
-        mac-option-modifier nil))
+  (setq mac-command-modifier 'meta))
 
 ;;;----------------------------------------------------------------------------
 ;;; Core Emacs Behavior
@@ -169,10 +169,11 @@
 ;; Ivy/Counsel/Swiper completion framework
 (use-package ivy
   :demand
-  :init
-  (ivy-mode 1)
   :config
+  (ivy-mode)
   ;; Make ivy use fuzzy matching
+  (setopt ivy-use-virtual-buffers t)
+(setopt enable-recursive-minibuffers t)
   (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
 
 (use-package counsel
@@ -279,6 +280,8 @@
          (go-mode . lsp)
          (python-mode . lsp)
          (yaml-ts-mode . lsp)
+         (yaml-mode . lsp)
+         (terraform . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
@@ -319,6 +322,8 @@
 (use-package go-mode)
 (use-package gotest)
 (use-package typescript-mode)
+(use-package terraform-mode)
+(use-package yaml-mode)
 
 ;;;----------------------------------------------------------------------------
 ;;; Finalization

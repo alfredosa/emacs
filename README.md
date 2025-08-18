@@ -1,9 +1,15 @@
-# tread with caution I don't know what I'm doing
+# I have finally figured out how emacs works
 
-I started vanilla to alfiemacs, with no previous knowledge of anything.
+.... And I will never leave
 
-It looks good tho? Lsp is broken.
+I love emacs. Lisp is cool, even if Lua is also nice.
 
-I like magit and org mode.
+```emacs-lisp
+(message "goodbye neovim and lua")
+```
 
-Maybe that Neovim is left behind except for server interactions.
+- LSP just works now.
+- Clean and Zen Pine theme with minimalistic mod line
+- just feels good, including the font is beautiful
+
+I like it here.

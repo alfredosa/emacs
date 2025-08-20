@@ -112,6 +112,7 @@
 ;; TODO: Move
 ;; Bind custom function
 (global-set-key (kbd "C-c C-r") 'reload-init-file)
+(global-set-key (kbd "C-c C-c") 'compile)
 
 (global-set-key (kbd "C-x p p") 'projectile-switch-project)
 (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
@@ -120,6 +121,12 @@
 (global-set-key (kbd "C-x g m") 'magit)
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
 (global-set-key (kbd "C-x C-/") 'comment-line)
+(global-set-key (kbd "C-,") 'duplicate-line)
+(global-set-key (kbd "C-.") 'copy-from-above-command)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <left>") 'windmove-left)
+(global-set-key (kbd "C-c <up>") 'windmove-up)
+(global-set-key (kbd "C-c <down>") 'windmove-down)
 
 ;; NOTE: This is a prexix :)
 (defvar my-find-map (make-sparse-keymap)
@@ -166,18 +173,7 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-;; Ivy/Counsel/Swiper completion framework
-(use-package ivy
-  :demand
-  :config
-  (ivy-mode)
-  ;; Make ivy use fuzzy matching
-  (setopt ivy-use-virtual-buffers t)
-(setopt enable-recursive-minibuffers t)
-  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy))))
-
 (use-package counsel
-  :after ivy
   :bind (("M-x" . counsel-M-x)
          ("C-x b" . counsel-ibuffer)
          ("C-x C-f" . counsel-find-file)
@@ -185,14 +181,7 @@
          ("C-r" . counsel-minibuffer-history)))
 
 (use-package swiper
-  :after ivy
   :bind (("C-s" . swiper)))
-
-(use-package ivy-prescient
-  :after ivy
-  :config
-  (ivy-prescient-mode 1)
-  (prescient-persist-mode 1))
 
 (use-package projectile
   :init
@@ -241,10 +230,6 @@
   :demand
   :config
   (gcmh-mode 1))
-
-;; Emojis!
-(use-package emojify
-  :hook (after-init . global-emojify-mode))
 
 ;;;----------------------------------------------------------------------------
 ;;; Programming Language Support

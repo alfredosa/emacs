@@ -70,21 +70,7 @@
   (prefer-coding-system 'utf-8)
   (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
 
-  ;; macOS-specific UI tweaks
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (add-to-list 'default-frame-alist '(ns-appearance . light))
-  (setq ns-use-proxy-icon  nil)
-  (setq frame-title-format nil)
-
   :config
-  ;; Line numbers in programming modes, but not everywhere else.
-  (defun ab/enable-line-numbers ()
-    "Enable relative line numbers"
-    (interactive)
-    (setq display-line-numbers t))
-  (add-hook 'prog-mode-hook #'ab/enable-line-numbers)
-
-  ;; Show a fill column indicator
   (set-face-attribute 'fill-column-indicator nil
                       :foreground "#717C7C" ; katana-gray
                       :background 'unspecified)
@@ -109,37 +95,7 @@
   (save-buffer)
   (kill-buffer))
 
-;; TODO: Move
-;; Bind custom function
-(global-set-key (kbd "C-c C-r") 'reload-init-file)
-(global-set-key (kbd "C-c C-c") 'compile)
-
-(global-set-key (kbd "C-x p p") 'projectile-switch-project)
-(global-set-key (kbd "C-x p a") 'projectile-add-known-project)
-(global-set-key (kbd "C-x p f") 'projectile-find-file)
-
-(global-set-key (kbd "C-x g m") 'magit)
-(global-set-key (kbd "C-x w q") 'alfie-close-and-save)
-(global-set-key (kbd "C-x C-/") 'comment-line)
-(global-set-key (kbd "C-,") 'duplicate-line)
-(global-set-key (kbd "C-.") 'copy-from-above-command)
-(global-set-key (kbd "C-c <right>") 'windmove-right)
-(global-set-key (kbd "C-c <left>") 'windmove-left)
-(global-set-key (kbd "C-c <up>") 'windmove-up)
-(global-set-key (kbd "C-c <down>") 'windmove-down)
-
-;; NOTE: This is a prexix :)
-(defvar my-find-map (make-sparse-keymap)
-  "My custom keymap for various find commands.")
-
-
-(define-key my-find-map (kbd "r") 'counsel-rg)
-(define-key my-find-map (kbd "f") 'projectile-find-file)
-(define-key my-find-map (kbd "b") 'counsel-ibuffer)
-
-(global-set-key (kbd "C-c f") (cons "Find" my-find-map))
-
-                                        ;; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+;; (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 
 ;; We will define more keybindings below as we configure packages
 
@@ -173,30 +129,26 @@
   :config
   (setq which-key-idle-delay 0.3))
 
-(use-package counsel
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . counsel-minibuffer-history)))
-
 (use-package swiper
   :bind (("C-s" . swiper)))
 
+(use-package helm
+  :demand t
+  :bind (("M-x" . helm-M-x)
+         ("C-x b" . helm-buffers-list)
+         ("C-r" . helm-recentf))
+  :config
+  (helm-mode 1))
+
 (use-package projectile
   :init
+  (setq projectile-completion-system 'helm)
   (setq projectile-project-search-path '("~/codehub/" "~/Org" "~/.config/"))
-  (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
+  (setq projectile-mode-line '(:eval (if (string= "-" (projectile-project-name) ) " " (format " [%s] " (projectile-project-name)))))
   :config
-  ;; Enable the global mode after projectile is loaded
   (projectile-mode +1)
-  ;; This is the key: explicitly discover all projects on startup
   (projectile-discover-projects-in-search-path))
-
-(use-package counsel-projectile
-  :after projectile
-  :config (counsel-projectile-mode))
 
 ;; Git integration
 (use-package magit
@@ -212,12 +164,6 @@
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (global-diff-hl-mode))
-
-;; Integrated Terminal
-(use-package vterm)
-(use-package vterm-toggle
-  ;; Bind vterm-toggle to C-c '
-  :bind (("C-c o t" . vterm-toggle)))
 
 ;; Search project with Ripgrep (rg)
 (use-package rg
@@ -239,7 +185,7 @@
 (use-package company
   :hook (prog-mode . global-company-mode)
   :config
-  (setq company-idle-delay 0.1)
+  (setq company-idle-delay 0.4)
   (setq company-minimum-prefix-length 1))
 
 ;; Syntax checking
@@ -350,4 +296,30 @@
       (message "Successfully set font to %s." alfies-preferred-font))
   (message "WARNING: Font '%s' is not installed." alfies-preferred-font))
 
+;; TODO: Move
+;; Bind custom function
+(global-set-key (kbd "C-c C-r") 'reload-init-file)
+(global-set-key (kbd "C-c C-c") 'compile)
+
+(global-set-key (kbd "C-x p p") 'projectile-switch-project)
+(global-set-key (kbd "C-x p a") 'projectile-add-known-project)
+(global-set-key (kbd "C-x p f") 'projectile-find-file)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+(global-set-key (kbd "C-x g m") 'magit)
+(global-set-key (kbd "C-x w q") 'alfie-close-and-save)
+(global-set-key (kbd "C-x C-/") 'comment-line)
+(global-set-key (kbd "C-,") 'duplicate-line)
+(global-set-key (kbd "C-.") 'copy-from-above-command)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
+(global-set-key (kbd "C-c <left>") 'windmove-left)
+(global-set-key (kbd "C-c <up>") 'windmove-up)
+(global-set-key (kbd "C-c <down>") 'windmove-down)
+
+;; NOTE: This is a prexix :)
+(defvar my-find-map (make-sparse-keymap)
+  "My custom keymap for various find commands.")
+(define-key my-find-map (kbd "r") 'helm-do-grep-ag-project)
+(define-key my-find-map (kbd "b") 'helm-buffer-list)
+(global-set-key (kbd "C-c f") (cons "Find" my-find-map))
 ;; init.el ends here

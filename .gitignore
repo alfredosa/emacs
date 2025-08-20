@@ -9,6 +9,8 @@
 \#*\#
 auto-save-list
 .saves*
+auto-saves/
+backups/
 
 # Undo-tree save-files
 *.~undo-tree

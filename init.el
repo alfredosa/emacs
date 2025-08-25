@@ -76,10 +76,6 @@
                       :background 'unspecified)
   (global-display-fill-column-indicator-mode 1))
 
-;;;----------------------------------------------------------------------------
-;;; Keybindings
-;;;----------------------------------------------------------------------------
-
 ;; Make Escape quit prompts and other things
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -132,17 +128,15 @@
 (use-package swiper
   :bind (("C-s" . swiper)))
 
-(use-package helm
-  :demand t
-  :bind (("M-x" . helm-M-x)
-         ("C-x b" . helm-buffers-list)
-         ("C-r" . helm-recentf))
+(ido-mode t)
+(ido-everywhere t)
+(use-package smex
   :config
-  (helm-mode 1))
+  (smex-initialize))
 
 (use-package projectile
   :init
-  (setq projectile-completion-system 'helm)
+  (setq projectile-completion-system 'ido)
   (setq projectile-project-search-path '("~/codehub/" "~/Org" "~/.config/"))
   (setq projectile-enable-caching t)
   (setq projectile-mode-line '(:eval (if (string= "-" (projectile-project-name) ) " " (format " [%s] " (projectile-project-name)))))
@@ -296,15 +290,25 @@
       (message "Successfully set font to %s." alfies-preferred-font))
   (message "WARNING: Font '%s' is not installed." alfies-preferred-font))
 
-;; TODO: Move
+
+;;;----------------------------------------------------------------------------
+;;; Keybindings
+;;;----------------------------------------------------------------------------
+
 ;; Bind custom function
+;; Better M-x brooooo
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
 (global-set-key (kbd "C-c C-r") 'reload-init-file)
 (global-set-key (kbd "C-c C-c") 'compile)
 
 (global-set-key (kbd "C-x p p") 'projectile-switch-project)
 (global-set-key (kbd "C-x p a") 'projectile-add-known-project)
 (global-set-key (kbd "C-x p f") 'projectile-find-file)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
 
 (global-set-key (kbd "C-x g m") 'magit)
 (global-set-key (kbd "C-x w q") 'alfie-close-and-save)
@@ -319,7 +323,5 @@
 ;; NOTE: This is a prexix :)
 (defvar my-find-map (make-sparse-keymap)
   "My custom keymap for various find commands.")
-(define-key my-find-map (kbd "r") 'helm-do-grep-ag-project)
-(define-key my-find-map (kbd "b") 'helm-buffer-list)
 (global-set-key (kbd "C-c f") (cons "Find" my-find-map))
 ;; init.el ends here

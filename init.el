@@ -5,6 +5,7 @@
 (menu-bar-mode -1)              ;; Disable the menu bar
 (tool-bar-mode -1)              ;; Disable the toolbar
 (scroll-bar-mode -1)            ;; Hide the always-visible scrollbar
+(global-display-line-numbers-mode t)
 (setq inhibit-splash-screen t)   ;; Remove the "Welcome to GNU Emacs" splash screen
 (setq use-file-dialog nil)
 
